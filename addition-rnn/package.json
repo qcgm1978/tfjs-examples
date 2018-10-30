@@ -23,7 +23,7 @@
     "vega-embed": "^3.0.0"
   },
   "scripts": {
-    "server": "nodemon --inspect server.js",
+    "server": "nodemon --inspect=7000 server.js",
     "watch": "cross-env NODE_ENV=development parcel index.html --no-hmr --open",
     "build": "cross-env NODE_ENV=production parcel build index.html --no-minify --public-url ./",
     "postinstall": "yarn upgrade --pattern @tensorflow"

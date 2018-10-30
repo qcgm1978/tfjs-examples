@@ -1,18 +1,41 @@
 const Koa = require('koa');
-const app = new Koa();
-// const router = require('koa-router');
-var router = require('koa-route');
+const router = require('koa-router')();
+const cors = require('koa-cors');
 const Sequelize = require('sequelize');
-// const cors = require('koa2-cors');
-// const cors = require('@koa/cors');
-var cors = require('koa-cors');
+/**
+ * Create HTTP server.
+ */
+const app = new Koa();
+app.listen(3000);
 
+// middlewares
+// CORS middleware for koa2
+app.use(cors({
+  origin: '*',
+  exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
+  maxAge: 5,
+  credentials: true,
+  allowMethods: ['GET', 'POST', 'DELETE'],
+  allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
+}));
+// Router middleware for koa.
+router.get('/api/config', controller);
+// routes
+app.use(router.routes(), router.allowedMethods());
+// async functions
+app.use(async (ctx, next) => {
+  const start = Date.now();
+  await next();
+  const ms = Date.now() - start;
+  ctx.response.body = (`${ctx.method} ${ctx.url} - ${ms}ms`);
+});
+
+// promise-based Node.js ORM
 const sequelize = new Sequelize('ml', 'root', 'test@2018', {
   host: '127.0.0.1',
   dialect: 'mysql',
   pass: 'test@2018',
-})
-
+});
 const ConfigModel = sequelize.define('rnn', {
   id: {
     type: Sequelize.BIGINT,
@@ -57,57 +80,7 @@ const ConfigModel = sequelize.define('rnn', {
 }, {
     timestamps: false,
   });
-app.use(router.get('/api/config', controller));
-// response
-// app.use(ctx => {
-//   ctx.body = 'Hello Koa';
-// });
-debugger;
-// app.use(router.routes(), router.allowedMethods());
-
-app.use(async (ctx, next) => {
-  const start = Date.now();
-  await next();
-  const ms = Date.now() - start;
-  ctx.response.body = (`${ctx.method} ${ctx.url} - ${ms}ms`);
-});
-// Middleware normally takes two parameters (ctx, next), ctx is the context for one request,
-// next is a function that is invoked to execute the downstream middleware. It returns a Promise with a then function for running code after completion.
-// app.use(cors({
-//   origin: '*',
-//   exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
-//   maxAge: 5,
-//   credentials: true,
-//   allowMethods: ['GET', 'POST', 'DELETE'],
-//   allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
-// }));
-app.use(async (ctx, next) => {
-  const origin = ctx.get('Origin');
-  if (ctx.method !== 'OPTIONS') {
-    ctx.set('Access-Control-Allow-Origin', origin);
-    ctx.set('Access-Control-Allow-Credentials', 'true');
-  } else if (ctx.get('Access-Control-Request-Method')) {
-    ctx.set('Access-Control-Allow-Origin', origin);
-    ctx.set('Access-Control-Allow-Methods', 'GET');
-    ctx.set('Access-Control-Allow-Headers', 'Content-Type');
-    ctx.set('Access-Control-Max-Age', '42');
-    ctx.set('Access-Control-Allow-Credentials', 'true');
-  }
-  await next();
-});
-
-app.use((ctx, next) => {
-  const start = Date.now();
-  return next().then(() => {
-    const ms = Date.now() - start;
-    console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
-  });
-});
-app.listen(3000);
-
 async function controller(ctx) {
-  debugger;
-  console.log('````````````````')
   const id = ctx.query.id;
   try {
     console.log(id)

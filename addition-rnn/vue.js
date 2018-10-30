@@ -34,19 +34,7 @@ var app = new Vue({
     ]
   },
   mounted() {
-    // axios
-    //   .get('/api/config?id=1', {
-    //     // 'Access-Control-Allow-Origin': '*',
-    //     // 'Content-type': 'application/x-www-form-urlencoded'
-    //     // Authorization: `Bearer aaa`
-    //     crossdomain: true
-    //   })
-    fetch('http://localhost:3000/api/config?id=1', {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include'
-    }).then(res => res.json())
+    fetch('http://localhost:3000/api/config?id=1').then(res => res.json())
       .then(data => {
         let arr = []
         for (const prop in data.data) {
@@ -64,18 +52,6 @@ var app = new Vue({
       .catch(err => {
         debugger;
       })
-
-    // fetch('http://localhost:3000/api/config?id=1', {
-    //   method: 'GET',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Access-Control-Allow-Credentials': true
-    //   },
-    //   credentials: 'include'
-    // })
-    //   .then(data => {
-
-    //   })
     runAdditionRNNDemo()
   }
 })
