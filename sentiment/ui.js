@@ -58,8 +58,14 @@ function doPredict(predict) {
   const reviewText = document.getElementById('review-text');
   const result = predict(reviewText.value);
   status(
+<<<<<<< HEAD
     'Inference result (0 - negative; 1 - positive): ' + result.score +
     ' (elapsed: ' + result.elapsed + ' ms)');
+=======
+      'Inference result (0 - negative; 1 - positive): ' +
+      result.score.toFixed(6) +
+      ' (elapsed: ' + result.elapsed.toFixed(2) + ' ms)');
+>>>>>>> 907e5431d7132f59ade3501290d41c9012c3b5c2
 }
 
 function setReviewText(text, predict) {

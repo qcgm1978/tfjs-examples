@@ -105,28 +105,29 @@ function createDenseModel() {
 }
 
 /**
+ * This callback type is used by the `train` function for insertion into
+ * the model.fit callback loop.
+ *
+ * @callback onIterationCallback
+ * @param {string} eventType Selector for which type of event to fire on.
+ * @param {number} batchOrEpochNumber The current epoch / batch number
+ * @param {tf.Logs} logs Logs to append to
+ */
+
+/**
  * Compile and train the given model.
  *
- * @param {*} model The model to
+ * @param {tf.Model} model The model to train.
+ * @param {onIterationCallback} onIteration A callback to execute every 10
+ *     batches & epoch end.
  */
-async function train(model) {
+async function train(model, onIteration) {
   ui.logStatus('Training model...');
 
   // Now that we've defined our model, we will define our optimizer. The
   // optimizer will be used to optimize our model's weight values during
   // training so that we can decrease our training loss and increase our
   // classification accuracy.
-
-  // The learning rate defines the magnitude by which we update our weights each
-  // training step. The higher the value, the faster our loss values converge,
-  // but also the more likely we are to overshoot optimal parameters
-  // when making an update. A learning rate that is too low will take too long
-  // to find optimal (or good enough) weight parameters while a learning rate
-  // that is too high may overshoot optimal parameters. Learning rate is one of
-  // the most important hyperparameters to set correctly. Finding the right
-  // value takes practice and is often best found empirically by trying many
-  // values.
-  const LEARNING_RATE = 0.01;
 
   // We are using rmsprop as our optimizer.
   // An optimizer is an iterative method for minimizing an loss function.
@@ -155,7 +156,7 @@ async function train(model) {
   // weights during training. A value that is too low will update weights using
   // too few examples and will not generalize well. Larger batch sizes require
   // more memory resources and aren't guaranteed to perform better.
-  const batchSize = 64;
+  const batchSize = 320;
 
   // Leave out the last 15% of the training data for validation, to monitor
   // overfitting during training.
@@ -191,12 +192,18 @@ async function train(model) {
             ` complete). To stop training, refresh or close page.`);
         ui.plotLoss(trainBatchCount, logs.loss, 'train');
         ui.plotAccuracy(trainBatchCount, logs.acc, 'train');
+        if (onIteration && batch % 10 === 0) {
+          onIteration('onBatchEnd', batch, logs);
+        }
         await tf.nextFrame();
       },
       onEpochEnd: async (epoch, logs) => {
         valAcc = logs.val_acc;
         ui.plotLoss(trainBatchCount, logs.val_loss, 'validation');
         ui.plotAccuracy(trainBatchCount, logs.val_acc, 'validation');
+        if (onIteration) {
+          onIteration('onEpochEnd', epoch, logs);
+        }
         await tf.nextFrame();
       }
     }
@@ -275,7 +282,5 @@ ui.setTrainButtonCallback(async () => {
   model.summary();
 
   ui.logStatus('Starting model training...');
-  await train(model);
-
-  showPredictions(model);
+  await train(model, () => showPredictions(model));
 });

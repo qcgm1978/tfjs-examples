@@ -22,8 +22,8 @@
  *   https://github.com/keras-team/keras/blob/master/examples/addition_rnn.py
  */
 
-import * as tf from '@tensorflow/tfjs';
-import embed from 'vega-embed';
+import * as tf from "@tensorflow/tfjs";
+import * as tfvis from "@tensorflow/tfjs-vis";
 
 class CharacterTable {
   /**
@@ -96,8 +96,8 @@ class CharacterTable {
       if (calcArgmax) {
         x = x.argMax(1);
       }
-      const xData = x.dataSync();  // TODO(cais): Performance implication?
-      let output = '';
+      const xData = x.dataSync(); // TODO(cais): Performance implication?
+      let output = "";
       for (const index of Array.from(xData)) {
         output += this.indicesChar[index];
       }
@@ -118,14 +118,14 @@ class CharacterTable {
  * @returns The generated examples.
  */
 function generateData(digits, numExamples, invert) {
-  const digitArray = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  const digitArray = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
   const arraySize = digitArray.length;
 
   const output = [];
   const maxLen = digits + 1 + digits;
 
   const f = () => {
-    let str = '';
+    let str = "";
     while (str.length < digits) {
       const index = Math.floor(Math.random() * arraySize);
       str += digitArray[index];
@@ -138,7 +138,7 @@ function generateData(digits, numExamples, invert) {
     const a = f();
     const b = f();
     const sorted = b > a ? [a, b] : [b, a];
-    const key = sorted[0] + '`' + sorted[1];
+    const key = sorted[0] + "`" + sorted[1];
     if (seen.has(key)) {
       continue;
     }
@@ -146,13 +146,13 @@ function generateData(digits, numExamples, invert) {
 
     // Pad the data with spaces such that it is always maxLen.
     const q = `${a}+${b}`;
-    const query = q + ' '.repeat(maxLen - q.length);
+    const query = q + " ".repeat(maxLen - q.length);
     let ans = (a + b).toString();
     // Answer can be of maximum size `digits + 1`.
-    ans += ' '.repeat(digits + 1 - ans.length);
+    ans += " ".repeat(digits + 1 - ans.length);
 
     if (invert) {
-      throw new Error('invert is not implemented yet');
+      throw new Error("invert is not implemented yet");
     }
     output.push([query, ans]);
   }
@@ -165,73 +165,93 @@ function convertDataToTensors(data, charTable, digits) {
   const answers = data.map(datum => datum[1]);
   return [
     charTable.encodeBatch(questions, maxLen),
-    charTable.encodeBatch(answers, digits + 1),
+    charTable.encodeBatch(answers, digits + 1)
   ];
 }
 
 function createAndCompileModel(
-  layers, hiddenSize, rnnType, digits, vocabularySize) {
+  layers,
+  hiddenSize,
+  rnnType,
+  digits,
+  vocabularySize
+) {
   const maxLen = digits + 1 + digits;
 
   const model = tf.sequential();
   switch (rnnType) {
-    case 'SimpleRNN':
-      model.add(tf.layers.simpleRNN({
-        units: hiddenSize,
-        recurrentInitializer: 'glorotNormal',
-        inputShape: [maxLen, vocabularySize]
-      }));
+    case "SimpleRNN":
+      model.add(
+        tf.layers.simpleRNN({
+          units: hiddenSize,
+          recurrentInitializer: "glorotNormal",
+          inputShape: [maxLen, vocabularySize]
+        })
+      );
       break;
-    case 'GRU':
-      model.add(tf.layers.gru({
-        units: hiddenSize,
-        recurrentInitializer: 'glorotNormal',
-        inputShape: [maxLen, vocabularySize]
-      }));
+    case "GRU":
+      model.add(
+        tf.layers.gru({
+          units: hiddenSize,
+          recurrentInitializer: "glorotNormal",
+          inputShape: [maxLen, vocabularySize]
+        })
+      );
       break;
-    case 'LSTM':
-      model.add(tf.layers.lstm({
-        units: hiddenSize,
-        recurrentInitializer: 'glorotNormal',
-        inputShape: [maxLen, vocabularySize]
-      }));
+    case "LSTM":
+      model.add(
+        tf.layers.lstm({
+          units: hiddenSize,
+          recurrentInitializer: "glorotNormal",
+          inputShape: [maxLen, vocabularySize]
+        })
+      );
       break;
     default:
       throw new Error(`Unsupported RNN type: '${rnnType}'`);
   }
   model.add(tf.layers.repeatVector({ n: digits + 1 }));
   switch (rnnType) {
-    case 'SimpleRNN':
-      model.add(tf.layers.simpleRNN({
-        units: hiddenSize,
-        recurrentInitializer: 'glorotNormal',
-        returnSequences: true
-      }));
+    case "SimpleRNN":
+      model.add(
+        tf.layers.simpleRNN({
+          units: hiddenSize,
+          recurrentInitializer: "glorotNormal",
+          returnSequences: true
+        })
+      );
       break;
-    case 'GRU':
-      model.add(tf.layers.gru({
-        units: hiddenSize,
-        recurrentInitializer: 'glorotNormal',
-        returnSequences: true
-      }));
+    case "GRU":
+      model.add(
+        tf.layers.gru({
+          units: hiddenSize,
+          recurrentInitializer: "glorotNormal",
+          returnSequences: true
+        })
+      );
       break;
-    case 'LSTM':
-      model.add(tf.layers.lstm({
-        units: hiddenSize,
-        recurrentInitializer: 'glorotNormal',
-        returnSequences: true
-      }));
+    case "LSTM":
+      model.add(
+        tf.layers.lstm({
+          units: hiddenSize,
+          recurrentInitializer: "glorotNormal",
+          returnSequences: true
+        })
+      );
       break;
     default:
       throw new Error(`Unsupported RNN type: '${rnnType}'`);
   }
-  model.add(tf.layers.timeDistributed(
-    { layer: tf.layers.dense({ units: vocabularySize }) }));
-  model.add(tf.layers.activation({ activation: 'softmax' }));
+  model.add(
+    tf.layers.timeDistributed({
+      layer: tf.layers.dense({ units: vocabularySize })
+    })
+  );
+  model.add(tf.layers.activation({ activation: "softmax" }));
   model.compile({
-    loss: 'categoricalCrossentropy',
-    optimizer: 'adam',
-    metrics: ['accuracy']
+    loss: "categoricalCrossentropy",
+    optimizer: "adam",
+    metrics: ["accuracy"]
   });
   return model;
 }
@@ -239,100 +259,98 @@ function createAndCompileModel(
 class AdditionRNNDemo {
   constructor(digits, trainingSize, rnnType, layers, hiddenSize) {
     // Prepare training data.
-    const chars = '0123456789+ ';
+    const chars = "0123456789+ ";
     this.charTable = new CharacterTable(chars);
-    console.log('Generating training data');
+    console.log("Generating training data");
     const data = generateData(digits, trainingSize, false);
     const split = Math.floor(trainingSize * 0.9);
     this.trainData = data.slice(0, split);
     this.testData = data.slice(split);
-    [this.trainXs, this.trainYs] =
-      convertDataToTensors(this.trainData, this.charTable, digits);
-    [this.testXs, this.testYs] =
-      convertDataToTensors(this.testData, this.charTable, digits);
+    [this.trainXs, this.trainYs] = convertDataToTensors(
+      this.trainData,
+      this.charTable,
+      digits
+    );
+    [this.testXs, this.testYs] = convertDataToTensors(
+      this.testData,
+      this.charTable,
+      digits
+    );
     this.model = createAndCompileModel(
-      layers, hiddenSize, rnnType, digits, chars.length);
+      layers,
+      hiddenSize,
+      rnnType,
+      digits,
+      chars.length
+    );
   }
 
   async train(iterations, batchSize, numTestExamples) {
-    const lossValues = [];
-    const accuracyValues = [];
-    const examplesPerSecValues = [];
+    const lossValues = [[], []];
+    const accuracyValues = [[], []];
     for (let i = 0; i < iterations; ++i) {
       const beginMs = performance.now();
       const history = await this.model.fit(this.trainXs, this.trainYs, {
         epochs: 1,
         batchSize,
         validationData: [this.testXs, this.testYs],
-        yieldEvery: 'epoch'
+        yieldEvery: "epoch"
       });
+
       const elapsedMs = performance.now() - beginMs;
-      const examplesPerSec = this.testXs.shape[0] / (elapsedMs / 1000);
-      const trainLoss = history.history['loss'][0];
-      const trainAccuracy = history.history['acc'][0];
-      const valLoss = history.history['val_loss'][0];
-      const valAccuracy = history.history['val_acc'][0];
-      document.getElementById('trainStatus').textContent =
-        `Iteration ${i}: train loss = ${trainLoss.toFixed(6)}; ` +
-        `train accuracy = ${trainAccuracy.toFixed(6)}; ` +
-        `validation loss = ${valLoss.toFixed(6)}; ` +
-        `validation accuracy = ${valAccuracy.toFixed(6)} ` +
-        `(${examplesPerSec.toFixed(1)} examples/s)`;
+      const modelFitTime = elapsedMs / 1000;
 
-      lossValues.push({ 'epoch': i, 'loss': trainLoss, 'set': 'train' });
-      lossValues.push({ 'epoch': i, 'loss': valLoss, 'set': 'validation' });
-      embed(
-        '#lossCanvas', {
-          '$schema': 'https://vega.github.io/schema/vega-lite/v2.json',
-          'data': { 'values': lossValues },
-          'mark': 'line',
-          'encoding': {
-            'x': { 'field': 'epoch', 'type': 'ordinal' },
-            'y': { 'field': 'loss', 'type': 'quantitative' },
-            'color': { 'field': 'set', 'type': 'nominal' },
-          },
-          'width': 400,
-        },
-        {});
-      accuracyValues.push(
-        { 'epoch': i, 'accuracy': trainAccuracy, 'set': 'train' });
-      accuracyValues.push(
-        { 'epoch': i, 'accuracy': valAccuracy, 'set': 'validation' });
-      embed(
-        '#accuracyCanvas', {
-          '$schema': 'https://vega.github.io/schema/vega-lite/v2.json',
-          'data': { 'values': accuracyValues },
-          'mark': 'line',
-          'encoding': {
-            'x': { 'field': 'epoch', 'type': 'ordinal' },
-            'y': { 'field': 'accuracy', 'type': 'quantitative' },
-            'color': { 'field': 'set', 'type': 'nominal' },
-          },
-          'width': 400,
-        },
-        {});
-      examplesPerSecValues.push({ 'epoch': i, 'examples/s': examplesPerSec });
-      embed(
-        '#examplesPerSecCanvas', {
-          '$schema': 'https://vega.github.io/schema/vega-lite/v2.json',
-          'data': { 'values': examplesPerSecValues },
-          'mark': 'line',
-          'encoding': {
-            'x': { 'field': 'epoch', 'type': 'ordinal' },
-            'y': { 'field': 'examples/s', 'type': 'quantitative' },
-          },
-          'width': 400,
-        },
-        {});
+      const trainLoss = history.history["loss"][0];
+      const trainAccuracy = history.history["acc"][0];
+      const valLoss = history.history["val_loss"][0];
+      const valAccuracy = history.history["val_acc"][0];
 
-      if (this.testXsForDisplay == null ||
-        this.testXsForDisplay.shape[0] !== numTestExamples) {
+      lossValues[0].push({ x: i, y: trainLoss });
+      lossValues[1].push({ x: i, y: valLoss });
+
+      accuracyValues[0].push({ x: i, y: trainAccuracy });
+      accuracyValues[1].push({ x: i, y: valAccuracy });
+
+      document.getElementById(
+        "trainStatus"
+      ).textContent = `Iteration ${i} of ${iterations}: Model fit time ${modelFitTime.toFixed(
+        6
+      )} (seconds)`;
+      const lossContainer = document.getElementById("lossChart");
+      tfvis.render.linechart(
+        { values: lossValues, series: ["train", "validation"] },
+        lossContainer,
+        {
+          width: 420,
+          height: 300,
+          xLabel: "epoch",
+          yLabel: "loss"
+        }
+      );
+
+      const accuracyContainer = document.getElementById("accuracyChart");
+      tfvis.render.linechart(
+        { values: accuracyValues, series: ["train", "validation"] },
+        accuracyContainer,
+        {
+          width: 420,
+          height: 300,
+          xLabel: "epoch",
+          yLabel: "accuracy"
+        }
+      );
+
+      if (
+        this.testXsForDisplay == null ||
+        this.testXsForDisplay.shape[0] !== numTestExamples
+      ) {
         if (this.textXsForDisplay) {
           this.textXsForDisplay.dispose();
         }
         this.testXsForDisplay = this.testXs.slice(
           [0, 0, 0],
-          [numTestExamples, this.testXs.shape[1], this.testXs.shape[2]]);
+          [numTestExamples, this.testXs.shape[1], this.testXs.shape[2]]
+        );
       }
 
       const examples = [];
@@ -340,49 +358,46 @@ class AdditionRNNDemo {
       tf.tidy(() => {
         const predictOut = this.model.predict(this.testXsForDisplay);
         for (let k = 0; k < numTestExamples; ++k) {
-          const scores =
-            predictOut
-              .slice(
-                [k, 0, 0], [1, predictOut.shape[1], predictOut.shape[2]])
-              .as2D(predictOut.shape[1], predictOut.shape[2]);
+          const scores = predictOut
+            .slice([k, 0, 0], [1, predictOut.shape[1], predictOut.shape[2]])
+            .as2D(predictOut.shape[1], predictOut.shape[2]);
           const decoded = this.charTable.decode(scores);
-          examples.push(this.testData[k][0] + ' = ' + decoded);
+          examples.push(this.testData[k][0] + " = " + decoded);
           isCorrect.push(this.testData[k][1].trim() === decoded.trim());
         }
       });
 
-      const examplesDiv = document.getElementById('testExamples');
-      while (examplesDiv.firstChild) {
-        examplesDiv.removeChild(examplesDiv.firstChild);
-      }
-      for (let i = 0; i < examples.length; ++i) {
-        const exampleDiv = document.createElement('div');
-        exampleDiv.textContent = examples[i];
-        exampleDiv.className = isCorrect[i] ? 'answer-correct' : 'answer-wrong';
-        examplesDiv.appendChild(exampleDiv);
-      }
+      const examplesDiv = document.getElementById("testExamples");
+      const examplesContent = examples.map(
+        (example, i) =>
+          `<div class="${isCorrect[i] ? "answer-correct" : "answer-wrong"}">` +
+          `${example}` +
+          `</div>`
+      );
+
+      examplesDiv.innerHTML = examplesContent.join("\n");
     }
   }
 }
 
 async function runAdditionRNNDemo() {
-  document.getElementById('trainModel').addEventListener('click', async () => {
-    const digits = +(document.getElementById('digits')).value;
-    const trainingSize = +(document.getElementById('trainingSize')).value;
-    const rnnTypeSelect = document.getElementById('rnnType');
-    const rnnType =
-      rnnTypeSelect.options[rnnTypeSelect.selectedIndex].getAttribute(
-        'value');
-    const layers = +(document.getElementById('rnnLayers')).value;
-    const hiddenSize = +(document.getElementById('rnnLayerSize')).value;
-    const batchSize = +(document.getElementById('batchSize')).value;
-    const trainIterations = +(document.getElementById('trainIterations')).value;
-    const numTestExamples = +(document.getElementById('numTestExamples')).value;
+  document.getElementById("trainModel").addEventListener("click", async () => {
+    const digits = +document.getElementById("digits").value;
+    const trainingSize = +document.getElementById("trainingSize").value;
+    const rnnTypeSelect = document.getElementById("rnnType");
+    const rnnType = rnnTypeSelect.options[
+      rnnTypeSelect.selectedIndex
+    ].getAttribute("value");
+    const layers = +document.getElementById("rnnLayers").value;
+    const hiddenSize = +document.getElementById("rnnLayerSize").value;
+    const batchSize = +document.getElementById("batchSize").value;
+    const trainIterations = +document.getElementById("trainIterations").value;
+    const numTestExamples = +document.getElementById("numTestExamples").value;
 
     // Do some checks on the user-specified parameters.
-    const status = document.getElementById('trainStatus');
+    const status = document.getElementById("trainStatus");
     if (digits < 1 || digits > 5) {
-      status.textContent = 'digits must be >= 1 and <= 5';
+      status.textContent = "digits must be >= 1 and <= 5";
       return;
     }
     const trainingSizeLimit = Math.pow(Math.pow(10, digits), 2);
@@ -393,8 +408,13 @@ async function runAdditionRNNDemo() {
       return;
     }
 
-    const demo =
-      new AdditionRNNDemo(digits, trainingSize, rnnType, layers, hiddenSize);
+    const demo = new AdditionRNNDemo(
+      digits,
+      trainingSize,
+      rnnType,
+      layers,
+      hiddenSize
+    );
     await demo.train(trainIterations, batchSize, numTestExamples);
   });
 }

@@ -75,6 +75,39 @@ to another project.
     <td></td>
   </tr>
   <tr>
+    <td><a href="./data-csv">data-csv</a></td>
+    <td><a href="https://storage.googleapis.com/tfjs-examples/data-csv/dist/index.html">🔗</a></td>
+    <td></td>
+    <td>How to build and work with a tf.data.Dataset from a remote CSV.</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><a href="./data-generator">data-generator</a></td>
+    <td><a href="https://storage.googleapis.com/tfjs-examples/data-generator/dist/index.html">🔗</a></td>
+    <td></td>
+    <td>How to build and work with a tf.data.Dataset using the generator API.</td>
+    <td>Regression</td>
+    <td>Multilayer perceptron</td>
+    <td>Browser</td>
+    <td>Layers</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><a href="./date-conversion-attention">date-conversion-attention</a></td>
+    <td><a href="https://storage.googleapis.com/tfjs-examples/date-conversion-attention/dist/index.html">🔗</a></td>
+    <td>Text</td>
+    <td>Text-to-text conversion</td>
+    <td>Attention mechanism, RNN</td>
+    <td>Node</td>
+    <td>Browser and Node</td>
+    <td>Layers</td>
+    <td>Saving to filesystem and loading in browser</td>
+  </tr>
+  <tr>
     <td><a href="./iris">iris</a></td>
     <td><a href="https://storage.googleapis.com/tfjs-examples/iris/dist/index.html">🔗</a></td>
     <td>Numeric</td>
@@ -86,10 +119,32 @@ to another project.
     <td></td>
   </tr>
   <tr>
+    <td><a href="./iris-fitDataset">iris-fitDataset</a></td>
+    <td><a href="https://storage.googleapis.com/tfjs-examples/iris-fitDataset/dist/index.html">🔗</a></td>
+    <td>Numeric</td>
+    <td>Multiclass classification</td>
+    <td>Multilayer perceptron</td>
+    <td>Browser</td>
+    <td>Browser</td>
+    <td>Layers</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><a href="./jena-weather">jena-weather</a></td>
+    <td><a href="https://storage.googleapis.com/tfjs-examples/jena-weather/dist/index.html">🔗</a></td>
+    <td>Sequence</td>
+    <td>Sequence-to-prediction</td>
+    <td>MLP and RNNs</td>
+    <td>Browser and Node</td>
+    <td>Browser</td>
+    <td>Layers</td>
+    <td></td>
+  </tr>
+  <tr>
     <td><a href="./lstm-text-generation">lstm-text-generation</a></td>
     <td><a href="https://storage.googleapis.com/tfjs-examples/lstm-text-generation/dist/index.html">🔗</a></td>
     <td>Text</td>
-    <td>Sequent-to-prediction</td>
+    <td>Sequence prediction</td>
     <td>RNN: LSTM</td>
     <td>Browser</td>
     <td>Browser</td>
@@ -106,6 +161,17 @@ to another project.
     <td>Browser</td>
     <td>Layers</td>
     <td></td>
+  </tr>
+  <tr>
+    <td><a href="./mnist-acgan">mnist-acgan</a></td>
+    <td><a href="https://storage.googleapis.com/tfjs-examples/mnist-acgan/dist/index.html">🔗</a></td>
+    <td>Image</td>
+    <td>Generative Adversarial Network (GAN)</td>
+    <td>Convolutional neural network; GAN</td>
+    <td>Node.js</td>
+    <td>Browser</td>
+    <td>Layers</td>
+    <td>Saving to filesystem from Node.js and loading it in the browser</td>
   </tr>
   <tr>
     <td><a href="./mnist-core">mnist-core</a></td>
@@ -177,12 +243,23 @@ to another project.
     <td><a href="./sentiment">sentiment</a></td>
     <td><a href="https://storage.googleapis.com/tfjs-examples/sentiment/dist/index.html">🔗</a></td>
     <td>Text</td>
-    <td>Sequence-to-regression</td>
+    <td>Sequence-to-binary-prediction</td>
     <td>LSTM, 1D convnet</td>
-    <td></td>
+    <td>Node.js</td>
     <td>Browser</td>
     <td>Layers</td>
-    <td>Loading model converted from Keras</td>
+    <td>Loading model converted from Keras and tfjs-node</td>
+  </tr>
+  <tr>
+    <td><a href="./simple-object-detection">simple-object-detection</a></td>
+    <td><a href="https://storage.googleapis.com/tfjs-examples/simple-object-detection/dist/index.html">🔗</a></td>
+    <td>Image</td>
+    <td>Object detection</td>
+    <td>Convolutional neural network (transfer learning)</td>
+    <td>Node.js</td>
+    <td>Browser</td>
+    <td>Layers</td>
+    <td>Save a trained model from tfjs-node and load it in the browser</td>
   </tr>
   <tr>
     <td><a href="./translation">translation</a></td>
@@ -219,7 +296,7 @@ to another project.
   </tr>
   <tr>
     <td><a href="./website-phishing">website-phishing</a></td>
-    <td></td>
+    <td><a href="https://storage.googleapis.com/tfjs-examples/website-phishing/dist/index.html">🔗</a></td>
     <td>Numeric</td>
     <td>Binary classification</td>
     <td>Multilayer perceptron</td>
@@ -268,6 +345,6 @@ can be used for deployment.
 ## Contributing
 
 If you want to contribute an example, please reach out to us on
-[Github issues](https://github.com/tensorflow/tfjs-examples/issues)
+[Github issues](https://github.com/tensorflow/tfjs/issues)
 before sending us a pull request as we are trying to keep this set of examples
 small and highly curated.
