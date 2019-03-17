@@ -318,6 +318,7 @@ class AdditionRNNDemo {
       )} (seconds)`;
       const lossContainer = document.getElementById("lossChart");
       tfvis.render.linechart(
+<<<<<<< HEAD
         { values: lossValues, series: ["train", "validation"] },
         lossContainer,
         {
@@ -327,9 +328,19 @@ class AdditionRNNDemo {
           yLabel: "loss"
         }
       );
+=======
+          lossContainer, {values: lossValues, series: ['train', 'validation']},
+          {
+            width: 420,
+            height: 300,
+            xLabel: 'epoch',
+            yLabel: 'loss',
+          });
+>>>>>>> 00ab7f63963dbc078a89d25e51fec977d800420b
 
       const accuracyContainer = document.getElementById("accuracyChart");
       tfvis.render.linechart(
+<<<<<<< HEAD
         { values: accuracyValues, series: ["train", "validation"] },
         accuracyContainer,
         {
@@ -339,6 +350,15 @@ class AdditionRNNDemo {
           yLabel: "accuracy"
         }
       );
+=======
+          accuracyContainer,
+          {values: accuracyValues, series: ['train', 'validation']}, {
+            width: 420,
+            height: 300,
+            xLabel: 'epoch',
+            yLabel: 'accuracy',
+          });
+>>>>>>> 00ab7f63963dbc078a89d25e51fec977d800420b
 
       if (
         this.testXsForDisplay == null ||
